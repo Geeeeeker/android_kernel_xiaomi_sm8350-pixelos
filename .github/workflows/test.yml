@@ -155,45 +155,6 @@ jobs:
             arch/arm64/configs/vendor/venus_QGKI.config \
             arch/arm64/configs/vendor/xiaomi_QGKI.config
 
-      # ========== 修复触摸驱动缺失枚举 ==========
-      - name: 补充触摸驱动缺失的 Touch_Wgh 枚举成员
-        working-directory: kernel
-        run: |
-          TOUCH_HEADER="include/linux/xiaomi_touch.h"
-          if [ -f "$TOUCH_HEADER" ]; then
-            if grep -q "Touch_Wgh_Min" "$TOUCH_HEADER"; then
-              echo "Touch_Wgh_Min already defined"
-            else
-              sed -i '/^enum.*touch_mode.*{/,/^};/{
-                /^};/i\    Touch_Wgh_Min,\n    Touch_Wgh_Max,\n    Touch_Wgh_Step,
-              }' "$TOUCH_HEADER"
-            fi
-          else
-            FTS_C="drivers/input/touchscreen/fts_521/fts.c"
-            if [ -f "$FTS_C" ]; then
-              sed -i '1 i\#define Touch_Wgh_Min 0\n#define Touch_Wgh_Max 1\n#define Touch_Wgh_Step 2' "$FTS_C"
-            fi
-          fi
-
-      # ========== 解决重复驱动冲突 ==========
-      - name: 禁用冲突驱动并注释 Btrfs 编译
-        working-directory: kernel
-        run: |
-          # 指纹驱动冲突：禁用旧版 goodix，保留 goodix_fod
-          scripts/config --file out/.config --disable CONFIG_FINGERPRINT_GOODIX
-          # 触摸驱动冲突：禁用 focaltech，保留 st_fts_v521
-          scripts/config --file out/.config --disable CONFIG_TOUCHSCREEN_FOCALTECH
-          scripts/config --file out/.config --disable CONFIG_TOUCHSCREEN_FOCALTECH_SPI
-
-          # 直接注释 fs/Makefile 中的 btrfs 目标，彻底排除编译
-          if [ -f fs/Makefile ]; then
-            sed -i '/btrfs/s/^/# /' fs/Makefile
-            echo "Btrfs compilation disabled in fs/Makefile"
-          fi
-
-          # 非交互更新配置
-          make O=out ARCH=arm64 olddefconfig </dev/null
-
       # ========== 编译主内核 ==========
       - name: 编译内核
         working-directory: kernel
