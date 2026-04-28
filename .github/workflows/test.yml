@@ -182,16 +182,15 @@ jobs:
           fi
 
           # 预先设置会触发交互的新选项，确保 olddefconfig 不再提问
-          # 设为 n 或 y 根据日志中的默认值
           scripts/config --file out/.config --set-val CONFIG_SHADOW_CALL_STACK n
           scripts/config --file out/.config --set-val CONFIG_LTO_NONE y
           scripts/config --file out/.config --set-val CONFIG_LTO_CLANG n
           scripts/config --file out/.config --set-val CONFIG_RELR y
 
-          # 现在安全执行非交互更新
+          # 非交互更新配置
           make O=out ARCH=arm64 olddefconfig
 
-      # ========== 编译主内核 ==========
+      # ========== 编译主内核（不包含 dtbo.img） ==========
       - name: 编译内核
         working-directory: kernel
         run: |
@@ -210,7 +209,7 @@ jobs:
             LLVM_IAS=1 \
             O=out \
             KCFLAGS="-Wno-unknown-warning-option -Wno-unused-but-set-variable" \
-            Image.gz dtbs dtbo.img
+            Image.gz dtbs
 
       # ========== USB/IP 支持 ==========
       - name: 设置 QEMU 用户态支持 (用于 arm64 容器)
@@ -358,20 +357,14 @@ jobs:
       - name: 打包 boot.img
         run: |
           git clone --depth=1 https://android.googlesource.com/platform/system/tools/mkbootimg mkbootimg
-          # 复制编译好的 Image.gz 到 mkbootimg 目录
           cp kernel/out/arch/arm64/boot/Image.gz mkbootimg/
 
           cd mkbootimg
-          # 下载原厂 boot.img 作为模板
           BOOT_IMG_URL="https://github.com/Geeeeeker/boot/releases/download/extracted-roms-20260322-062443/LineageOS_boot.img"
           curl -LSs "$BOOT_IMG_URL" -o boot.img
 
-          # 解包 boot.img，获取 mkbootimg 参数和原文件
           mkbootimg_args=$(./unpack_bootimg.py --out out --boot_img boot.img --format mkbootimg)
-          # 用编译出的 Image.gz 替换原 kernel 文件
           cp -f Image.gz out/kernel
-
-          # 使用原参数重新打包
           eval "./mkbootimg.py $mkbootimg_args -o boot-lineage-${{ env.DEVICE }}.img"
 
           echo "BOOT_IMG_NAME=boot-lineage-${{ env.DEVICE }}.img" >> $GITHUB_ENV
