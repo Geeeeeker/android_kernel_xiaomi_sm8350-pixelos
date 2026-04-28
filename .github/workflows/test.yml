@@ -1,4 +1,4 @@
-name: boot需要修改为pe官方提供的img！编译内核 ( LXC/Docker + USB/IP + RTL8188EUS )
+name: boot需要修改为pe官方提供的img！编译内核 ( LXC/Docker + USB/IP + RTL8188EUS )内核源码没有定义 dtbo.img 的构建规则
 
 on:
   push:
