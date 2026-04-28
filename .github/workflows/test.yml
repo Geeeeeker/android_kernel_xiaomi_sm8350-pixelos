@@ -1,4 +1,4 @@
-name: boot需要修改为pe官方提供的img！编译内核 ( LXC/Docker + USB/IP + UMI )
+name: boot需要修改为pe官方提供的img！编译内核 ( LXC/Docker + USB/IP + RTL8188EUS )
 
 on:
   push:
@@ -362,7 +362,7 @@ jobs:
           cp kernel/out/arch/arm64/boot/Image.gz-dtb mkbootimg/
 
           cd mkbootimg
-          # TODO: 请替换为 umi 专用 boot.img
+          # TODO: 请替换为 venus 专用 boot.img
           BOOT_IMG_URL="https://github.com/Geeeeeker/boot/releases/download/extracted-roms-20260322-062443/LineageOS_boot.img"
           curl -LSs "$BOOT_IMG_URL" -o boot.img
 
