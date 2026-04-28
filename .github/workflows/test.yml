@@ -165,6 +165,7 @@ jobs:
             arch/arm64/configs/gki_defconfig \
             arch/arm64/configs/vendor/venus_QGKI.config \
             arch/arm64/configs/vendor/xiaomi_QGKI.config \
+            arch/arm64/configs/vendor/genericarmv8-64_defconfig \
             arch/arm64/configs/vendor/xiaomi/docker.config \
             arch/arm64/configs/vendor/xiaomi/gcc.config \
             arch/arm64/configs/vendor/xiaomi/kernelsu.config \
