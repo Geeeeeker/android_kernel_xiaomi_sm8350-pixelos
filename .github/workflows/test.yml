@@ -155,6 +155,12 @@ jobs:
             arch/arm64/configs/vendor/venus_QGKI.config \
             arch/arm64/configs/vendor/xiaomi_QGKI.config
 
+      # ========== 修复 LXC/Docker 补丁导致的 cgroup 兼容问题 ==========
+      - name: 修复 netprio_cgroup.h 的 cgroup id 访问
+        working-directory: kernel
+        run: |
+          sed -i 's/css->cgroup->id/cgroup_id(css->cgroup)/g' include/net/netprio_cgroup.h
+
       # ========== 编译主内核 ==========
       - name: 编译内核
         working-directory: kernel
