@@ -153,7 +153,12 @@ jobs:
           ./scripts/kconfig/merge_config.sh -m -O out \
             arch/arm64/configs/gki_defconfig \
             arch/arm64/configs/vendor/venus_QGKI.config \
-            arch/arm64/configs/vendor/xiaomi_QGKI.config
+            arch/arm64/configs/vendor/xiaomi_QGKI.config \
+            arch/arm64/configs/vendor/xiaomi/docker.config \
+            arch/arm64/configs/vendor/xiaomi/gcc.config \
+            arch/arm64/configs/vendor/xiaomi/kernelsu.config \
+            arch/arm64/configs/vendor/xiaomi/pgsql.config \
+            arch/arm64/configs/vendor/xiaomi/usb.config
 
       # ========== 修复 LXC/Docker 补丁导致的 cgroup 兼容问题 ==========
       - name: 修复 netprio_cgroup.h 的 cgroup id 访问
